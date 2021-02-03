@@ -7,6 +7,12 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
+        <Button Content="Dodaj Klienta" Margin="665,369,47,25"/>
+        <Button Content="Dodaj Zamówienie" Margin="512,369,160,25"/>
+        <Button Content="Kup Towar" Margin="400,369,312,25"/>
+        <Button Content="Zrealizuj Zamówienie" Margin="242,369,436,25"/>
+        <Label Content="Numer zamówienia" Margin="10,32,479,343" FontSize="18"/>
+        <TextBox HorizontalAlignment="Left" Margin="182,32,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Height="30" FontSize="18" InputScope="Number"/>
 
     </Grid>
 </Window>
