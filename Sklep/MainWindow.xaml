@@ -5,14 +5,31 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Sklep"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="Sklep" Height="450" Width="800" ResizeMode="CanMinimize">
     <Grid>
-        <Button Content="Dodaj Klienta" Margin="665,369,47,25"/>
-        <Button Content="Dodaj Zamówienie" Margin="512,369,160,25"/>
-        <Button Content="Kup Towar" Margin="400,369,312,25"/>
-        <Button Content="Zrealizuj Zamówienie" Margin="242,369,436,25"/>
-        <Label Content="Numer zamówienia" Margin="10,32,479,343" FontSize="18"/>
-        <TextBox HorizontalAlignment="Left" Margin="182,32,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Height="30" FontSize="18" InputScope="Number"/>
+        <Button x:Name="dodaj_klient" Content="Dodaj Klienta" Margin="665,369,31,10"/>
+        <Button x:Name="dodaj_zamowienie" Content="Dodaj Zamówienie" Margin="532,369,140,10"/>
+        <Button x:Name="kup_towar" Content="Kup Towar" Margin="439,369,273,10"/>
+        <Button x:Name="realizuj_zamowienie" Content="Zrealizuj Zamówienie" Margin="300,369,366,10"/>
+        <Label Content="Numer zamówienia:" Margin="10,33,479,342" FontSize="18"/>
+        <TextBox x:Name="id_zamowienia" HorizontalAlignment="Left" Margin="183,41,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Height="22" FontSize="18" InputScope="Number"/>
+        <DataGrid Margin="400,74,31,235">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Numer Zamówienia"/>
+                <DataGridTextColumn Header="Nazwa Klienta"/>
+                <DataGridTextColumn Header="Nazwa Towaru"/>
+                <DataGridTextColumn Header="Ilość"/>
+                <DataGridTextColumn Header="Cena"/>
+            </DataGrid.Columns>
+        </DataGrid>
+        <DataGrid Margin="400,199,31,110">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Nazwa Towaru"/>
+                <DataGridTextColumn Header="Ilość"/>
+                <DataGridTextColumn Header="Cena"/>
+            </DataGrid.Columns>
+        </DataGrid>
+        <Label x:Name="stanKonta" Content="Stan Konta:" HorizontalAlignment="Left" Margin="608,15,0,0" VerticalAlignment="Top" Width="109"/>
 
     </Grid>
 </Window>
