@@ -1,0 +1,22 @@
+﻿<Window x:Class="Sklep.Klienci"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Sklep"
+        mc:Ignorable="d"
+        Title="Klienci" Height="450" Width="800" ResizeMode="CanMinimize">
+    <Grid>
+        <Button x:Name="klient_dodaj" Content="Dodaj Klienta" HorizontalAlignment="Left" Height="37" Margin="605,368,0,0" VerticalAlignment="Top" Width="165" Click="DodajKlienci"/>
+        <Label Content="Nazwa Klienta:" HorizontalAlignment="Left" Margin="32,45,0,0" VerticalAlignment="Top" Width="167" Height="40" FontSize="18"/>
+        <Label Content="Adres:" HorizontalAlignment="Left" Margin="32,90,0,0" VerticalAlignment="Top" Width="167" Height="40" FontSize="18"/>
+        <Label Content="Numer telefonu:" HorizontalAlignment="Left" Margin="32,130,0,0" VerticalAlignment="Top" Width="167" Height="40" FontSize="18"/>
+        <Label Content="NIP:" HorizontalAlignment="Left" Margin="32,170,0,0" VerticalAlignment="Top" Width="167" Height="40" FontSize="18"/>
+        <TextBox x:Name="nazwa_klient" HorizontalAlignment="Left" Height="20" Margin="187,55,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="156"/>
+        <TextBox x:Name="adres_klient" HorizontalAlignment="Left" Height="20" Margin="187,100,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="156"/>
+        <TextBox x:Name="telefon_klient" HorizontalAlignment="Left" Height="20" Margin="187,140,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="156"/>
+        <TextBox x:Name="nip_kient" HorizontalAlignment="Left" Height="20" Margin="187,180,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="156"/>
+        <Label x:Name="udane_klient" Content="" HorizontalAlignment="Left" Height="38" Margin="132,266,0,0" VerticalAlignment="Top" Width="500" FontSize="18" FontWeight="Bold"/>
+
+    </Grid>
+</Window>

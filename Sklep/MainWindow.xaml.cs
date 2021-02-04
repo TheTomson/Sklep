@@ -60,6 +60,11 @@ namespace Sklep
             var kuptowar = new KupTowar(kasa);
             kuptowar.Show();
         }
+        private void DodajKlienta(object sender, RoutedEventArgs e)
+        {
+            var dodajKlienta = new Klienci();
+            dodajKlienta.Show();
+        }
     }
     public class Towary
     {

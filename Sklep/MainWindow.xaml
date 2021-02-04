@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         Title="Sklep" Height="450" Width="800" ResizeMode="CanMinimize">
     <Grid>
-        <Button x:Name="dodaj_klient" Content="Dodaj Klienta" Margin="665,369,31,10"/>
+        <Button x:Name="dodaj_klient" Content="Dodaj Klienta" Margin="665,369,31,10" Click="DodajKlienta"/>
         <Button x:Name="dodaj_zamowienie" Content="Dodaj Zamówienie" Margin="532,369,140,10"/>
         <Button x:Name="kup_towar" Content="Kup Towar" Margin="439,369,273,10" ClickMode="Press" Click="KupTowar"/>
         <Button x:Name="realizuj_zamowienie" Content="Zrealizuj Zamówienie" Margin="300,369,366,10"/>
