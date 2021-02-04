@@ -12,6 +12,10 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Microsoft.Data.Sqlite;
+using System.Collections.ObjectModel;
+using System.Data;
+using System.Diagnostics;
 
 namespace Sklep
 {
@@ -23,6 +27,42 @@ namespace Sklep
         public MainWindow()
         {
             InitializeComponent();
+            PobierzSklep();
+        }
+        public void PobierzSklep()
+        {
+            using (var connection = new SqliteConnection("Data Source=SklepDB.db"))
+            {
+                connection.Open();
+                var command = connection.CreateCommand();
+                command.CommandText = @"SELECT NazwaTowaru,Ilosc,Cena FROM Sklep";
+                List<Towary> towary = new List<Towary>();
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        var nazwa = reader.GetString(0);
+                        var ilosc = reader.GetString(1);
+                        var cena = reader.GetString(2);
+                        var towar = new Towary(nazwa, ilosc, cena);
+                        towary.Add(towar);
+                    }
+                }
+                sklep.ItemsSource = towary;
+            }
+        }
+    }
+    public class Towary
+    {
+        public string NazwaTowaru { get; set; }
+        public string Ilosc { get; set; }
+        public string Cena { get; set; }
+
+        public Towary(string a, string b, string c)
+        {
+            NazwaTowaru = a;
+            Ilosc = b;
+            Cena = c;
         }
     }
 }

@@ -13,7 +13,7 @@
         <Button x:Name="realizuj_zamowienie" Content="Zrealizuj Zamówienie" Margin="300,369,366,10"/>
         <Label Content="Numer zamówienia:" Margin="10,33,479,342" FontSize="18"/>
         <TextBox x:Name="id_zamowienia" HorizontalAlignment="Left" Margin="183,41,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Height="22" FontSize="18" InputScope="Number"/>
-        <DataGrid Margin="400,74,31,235">
+        <DataGrid x:Name="zamowienia" Margin="400,74,31,235">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Numer Zamówienia"/>
                 <DataGridTextColumn Header="Nazwa Klienta"/>
@@ -22,12 +22,7 @@
                 <DataGridTextColumn Header="Cena"/>
             </DataGrid.Columns>
         </DataGrid>
-        <DataGrid Margin="400,199,31,110">
-            <DataGrid.Columns>
-                <DataGridTextColumn Header="Nazwa Towaru"/>
-                <DataGridTextColumn Header="Ilość"/>
-                <DataGridTextColumn Header="Cena"/>
-            </DataGrid.Columns>
+        <DataGrid x:Name="sklep" Margin="400,199,31,110">
         </DataGrid>
         <Label x:Name="stanKonta" Content="Stan Konta:" HorizontalAlignment="Left" Margin="608,15,0,0" VerticalAlignment="Top" Width="109"/>
 
