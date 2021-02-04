@@ -57,7 +57,7 @@ namespace Sklep
 
         private void KupTowar(object sender, RoutedEventArgs e)
         {
-            var kuptowar = new KupTowar();
+            var kuptowar = new KupTowar(kasa);
             kuptowar.Show();
         }
     }
