@@ -24,10 +24,13 @@ namespace Sklep
     /// </summary>
     public partial class MainWindow : Window
     {
+        private int kasa;
         public MainWindow()
         {
             InitializeComponent();
             PobierzSklep();
+            kasa = 1000;
+            kasa_l.Content = kasa;
         }
         public void PobierzSklep()
         {
@@ -50,6 +53,12 @@ namespace Sklep
                 }
                 sklep.ItemsSource = towary;
             }
+        }
+
+        private void KupTowar(object sender, RoutedEventArgs e)
+        {
+            var kuptowar = new KupTowar();
+            kuptowar.Show();
         }
     }
     public class Towary

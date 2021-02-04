@@ -9,7 +9,7 @@
     <Grid>
         <Button x:Name="dodaj_klient" Content="Dodaj Klienta" Margin="665,369,31,10"/>
         <Button x:Name="dodaj_zamowienie" Content="Dodaj Zamówienie" Margin="532,369,140,10"/>
-        <Button x:Name="kup_towar" Content="Kup Towar" Margin="439,369,273,10"/>
+        <Button x:Name="kup_towar" Content="Kup Towar" Margin="439,369,273,10" ClickMode="Press" Click="KupTowar"/>
         <Button x:Name="realizuj_zamowienie" Content="Zrealizuj Zamówienie" Margin="300,369,366,10"/>
         <Label Content="Numer zamówienia:" Margin="10,33,479,342" FontSize="18"/>
         <TextBox x:Name="id_zamowienia" HorizontalAlignment="Left" Margin="183,41,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Height="22" FontSize="18" InputScope="Number"/>
@@ -25,6 +25,7 @@
         <DataGrid x:Name="sklep" Margin="400,199,31,110">
         </DataGrid>
         <Label x:Name="stanKonta" Content="Stan Konta:" HorizontalAlignment="Left" Margin="608,15,0,0" VerticalAlignment="Top" Width="109"/>
+        <Label x:Name="kasa_l" Content="" HorizontalAlignment="Left" Margin="688,15,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.487,0.516"/>
 
     </Grid>
 </Window>
