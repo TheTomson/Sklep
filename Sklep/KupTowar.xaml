@@ -10,12 +10,12 @@
         <Label Content="Co chcesz kupic?" Margin="44,29,0,0" FontSize="18" HorizontalAlignment="Left" VerticalAlignment="Top" Height="65" Width="253"/>
         <Label Content="Ilosc:" HorizontalAlignment="Left" Margin="44,79,0,0" VerticalAlignment="Top" Width="96" FontSize="18" Height="59"/>
         <Label Content="Kwota do zapłaty:" Margin="44,130,590,225" FontSize="18"/>
-        <Button x:Name="kup_soki" Content="Kup " HorizontalAlignment="Left" Margin="660,359,0,0" VerticalAlignment="Top" Height="23" Width="105"/>
-        <TextBox x:Name="do_zaplaty" HorizontalAlignment="Left" Margin="210,136,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
+        <Button x:Name="kup_soki" Content="Kup " HorizontalAlignment="Left" Margin="660,359,0,0" VerticalAlignment="Top" Height="23" Width="105" Click="kup_sokii"/>
         <TextBox x:Name="ilosc_sokow" HorizontalAlignment="Left" Margin="210,90,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Height="18" Text="0"/>
         <ComboBox x:Name="lista_towar" HorizontalAlignment="Left" Margin="210,29,0,0" VerticalAlignment="Top" Width="149" Height="33"/>
         <Button x:Name="oblicz_soki" Content="Oblicz" HorizontalAlignment="Left" Margin="550,359,0,0" VerticalAlignment="Top" Height="23" Width="105" Click="wyznacz_cene"/>
         <Label x:Name="produkt_kupiony" Content="" HorizontalAlignment="Left" Margin="92,264,0,0" VerticalAlignment="Top" Width="592"/>
+        <Label x:Name="do_zaplatyy" Content="" HorizontalAlignment="Left" Height="32" Margin="215,138,0,0" VerticalAlignment="Top" Width="150"/>
 
     </Grid>
 </Window>
