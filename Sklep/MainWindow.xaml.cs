@@ -28,16 +28,20 @@ namespace Sklep
 
         private Dictionary<string, SokInformacje> tabela_sokow;
         private Dictionary<string, KlientInformacje> tabela_klientow;
+        private Dictionary<int, ZamowienieInformacje> tabela_zamowien;
         public MainWindow()
         {
             kasa = 1000;
             tabela_sokow = new Dictionary<string, SokInformacje>();
             tabela_klientow = new Dictionary<string, KlientInformacje>();
+            tabela_zamowien = new Dictionary<int, ZamowienieInformacje>();
             InitializeComponent();
             kasa_l.Content = kasa;
             PobierzSklep();
             PobierzKlientow();
+            PobierzZamowienia();
             AktualizujTabeleSokow();
+            AktualizujTabeleZamowien();
         }
         public void PobierzSklep()
         {
@@ -45,18 +49,18 @@ namespace Sklep
             {
                 connection.Open();
                 var command = connection.CreateCommand();
-                command.CommandText = @"SELECT NazwaTowaru,Ilosc,Cena FROM Sklep";
+                command.CommandText = @"SELECT IdTowaru, NazwaTowaru, Ilosc, Cena FROM Sklep";
                 using (var reader = command.ExecuteReader())
                 {
                     while (reader.Read())
                     {
-                        var nazwa = reader.GetString(0);
-                        var ilosc = Convert.ToInt32(reader.GetString(1));
-                        var cena = Convert.ToInt32(reader.GetString(2));
-                        tabela_sokow.Add(nazwa, new SokInformacje(ilosc, cena));
+                        var id = reader.GetInt32(0);
+                        var nazwa = reader.GetString(1);
+                        var ilosc = reader.GetInt32(2);
+                        var cena = reader.GetInt32(3);
+                        tabela_sokow.Add(nazwa, new SokInformacje(id, ilosc, cena));
                     }
                 }
-
             }
         }
 
@@ -66,16 +70,42 @@ namespace Sklep
             {
                 connection.Open();
                 var command = connection.CreateCommand();
-                command.CommandText = @"SELECT Nazwa, Adres, NumerTelefonu, NIP FROM Klienci";
+                command.CommandText = @"SELECT Id, Nazwa, Adres, NumerTelefonu, NIP FROM Klienci";
                 using (var reader = command.ExecuteReader())
                 {
                     while (reader.Read())
                     {
-                        var nazwa = reader.GetString(0);
-                        var adres = reader.GetString(1);
-                        var numer_tel = reader.GetString(2);
-                        var nip = reader.GetString(3);
-                        tabela_klientow.Add(nip, new KlientInformacje(nazwa, adres, numer_tel));
+                        var id = reader.GetInt32(0);
+                        var nazwa = reader.GetString(1);
+                        var adres = reader.GetString(2);
+                        var numer_tel = reader.GetString(3);
+                        var nip = reader.GetString(4);
+                        tabela_klientow.Add(nip, new KlientInformacje(id, nazwa, adres, numer_tel));
+                    }
+                }
+            }
+        }
+
+        public void PobierzZamowienia()
+        {
+            tabela_zamowien.Clear();
+            using (var connection = new SqliteConnection("Data Source=SklepDB.db"))
+            {
+                connection.Open();
+                var command = connection.CreateCommand();
+                command.CommandText = @"SELECT Zamowienia.ID, Klienci.Nazwa, Klienci.NIP, Sklep.NazwaTowaru, Zamowienia.Ilosc, Zamowienia.Koszt FROM Zamowienia INNER JOIN Klienci ON Zamowienia.IdKlienta=Klienci.ID INNER JOIN Sklep ON Zamowienia.IdTowaru=Sklep.IdTowaru";
+
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        var id = reader.GetInt32(0);
+                        var nazwa = reader.GetString(1);
+                        var nip = reader.GetString(2);
+                        var sok = reader.GetString(3);
+                        var ilosc = reader.GetInt32(4);
+                        var koszt = reader.GetInt32(5);
+                        tabela_zamowien.Add(id, new ZamowienieInformacje(nazwa, nip, sok, ilosc, koszt));
                     }
                 }
             }
@@ -83,13 +113,24 @@ namespace Sklep
 
         public void AktualizujTabeleSokow()
         {
-            List<WpisWTabeli> tabela = new List<WpisWTabeli>();
+            List<WpisWTabeliSokow> tabela = new List<WpisWTabeliSokow>();
             foreach (var sok in tabela_sokow)
             {
-                tabela.Add(new WpisWTabeli { nazwa_soku = sok.Key, ilosc = sok.Value.Ilosc, cena = sok.Value.Cena });
+                tabela.Add(new WpisWTabeliSokow { nazwa_soku = sok.Key, ilosc = sok.Value.Ilosc, cena = sok.Value.Cena });
             }
 
             sklep.ItemsSource = tabela;
+        }
+
+        public void AktualizujTabeleZamowien()
+        {
+            List<ZamowienieInformacje> zamowienia = new List<ZamowienieInformacje>();
+            foreach (var zamowienie in tabela_zamowien)
+            {
+                zamowienia.Add(zamowienie.Value);
+            }
+
+            lista_zamowien.ItemsSource = zamowienia;
         }
 
         private void KupTowar(object sender, RoutedEventArgs e)
@@ -102,20 +143,28 @@ namespace Sklep
             var dodajKlienta = new Klienci(ref tabela_klientow);
             dodajKlienta.Show();
         }
+
+        private void DodajZamowienie(object sender, RoutedEventArgs e)
+        {
+            var dodaj_zamowienie = new Zamowienia(this, ref tabela_sokow, ref tabela_klientow);
+            dodaj_zamowienie.Show();
+        }
     }
     public class SokInformacje
     {
+        public int ID { get; set; }
         public int Ilosc { get; set; }
         public int Cena { get; set; }
 
-        public SokInformacje(int ilosc, int cena)
+        public SokInformacje(int id, int ilosc, int cena)
         {
+            ID = id;
             Ilosc = ilosc;
             Cena = cena;
         }
     }
 
-    struct WpisWTabeli
+    struct WpisWTabeliSokow
     {
         public string nazwa_soku { get; set; }
         public int ilosc { get; set; }
@@ -124,15 +173,35 @@ namespace Sklep
 
     public class KlientInformacje
     {
+        public int ID { get; set; }
         public string Nazwa { get; set; }
         public string Adres { get; set; }
         public string NumerTelefonu { get; set; }
 
-        public KlientInformacje(string n, string a, string nt)
+        public KlientInformacje(int id, string nazwa, string adres, string telefon)
         {
-            Nazwa = n;
-            Adres = a;
-            NumerTelefonu = nt;
+            ID = id;
+            Nazwa = nazwa;
+            Adres = adres;
+            NumerTelefonu = telefon;
+        }
+    }
+
+    public class ZamowienieInformacje
+    {
+        public string NazwaKlienta { get; set; }
+        public string NipKlienta { get; set; }
+        public string NazwaSoku { get; set; }
+        public int Ilosc { get; set; }
+        public int Cena { get; set; }
+
+        public ZamowienieInformacje(string nazwa, string nip, string sok, int ilosc, int cena)
+        {
+            NazwaKlienta = nazwa;
+            NipKlienta = nip;
+            NazwaSoku = sok;
+            Ilosc = ilosc;
+            Cena = cena;
         }
     }
 }
