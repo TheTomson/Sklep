@@ -22,25 +22,62 @@ namespace Sklep
     /// </summary>                                   
     public partial class Klienci : Window
     {
-        public Klienci()
+        private Dictionary<string, KlientInformacje> tabela_klientow;
+        public Klienci(ref Dictionary<string, KlientInformacje> tk)
         {
+            tabela_klientow = tk;
             InitializeComponent();
         }
         public void DodajKlienci(object sender, RoutedEventArgs e)
         {
-            var nazwaKlienta = nazwa_klient.Text;
-            var adresKlienta = adres_klient.Text;
-            var telefonKlienta = telefon_klient.Text;
-            var nipKlienta = nip_kient.Text;
+            bool dodaj_klienta = true;
+            var nazwa_klienta = nazwa_klient.Text;
+            var adres_klienta = adres_klient.Text;
+            var telefon_klienta = telefon_klient.Text;
+            var nip_klienta = nip_kient.Text;
 
-            var query = String.Format("INSERT INTO Klienci VALUES (NULL,'{0}','{1}','{2}','{3}')", nazwa_klient.Text, adres_klient.Text, telefon_klient.Text, nip_kient.Text);
-            using (var connection = new SqliteConnection("Data Source=SklepDB.db"))
+            if (nazwa_klienta.Length > 255 && nazwa_klienta.Length == 0)
             {
-                connection.Open();
-                var command = connection.CreateCommand();
-                command.CommandText = query;
-                command.ExecuteScalar();
-                udane_klient.Content = "Udało się! Dodałeś nowego klienta do bazy danych!";
+                udane_klient.Content = "Nazwa nie może być dłuższa niż 255 znaków oraz nie może być pusty!";
+                dodaj_klienta = false;
+                return;
+            }
+            else if (adres_klienta.Length > 255 && adres_klienta.Length == 0)
+            {
+                udane_klient.Content = "Adres nie może być dłuższy niż 255 znaków oraz nie może być pusty!";
+                dodaj_klienta = false;
+                return;
+            }
+            else if (telefon_klienta.Length != 9)
+            {
+                udane_klient.Content = "Numer telefonu musi posiadać 9 cyfr!";
+                dodaj_klienta = false;
+                return;
+            }
+            else if (nip_klienta.Length != 11)
+            {
+                udane_klient.Content = "NIP musi posiadać 11 cyfr!";
+                dodaj_klienta = false;
+                return;
+            }
+
+            if (tabela_klientow.ContainsKey(nip_klienta))
+            {
+                udane_klient.Content = "Podany numer NIP jest już w bazie danych!";
+                dodaj_klienta = false;
+            }
+
+            if (dodaj_klienta)
+            {
+                var query = String.Format("INSERT INTO Klienci VALUES (NULL,'{0}','{1}','{2}','{3}')", nazwa_klient.Text, adres_klient.Text, telefon_klient.Text, nip_kient.Text);
+                using (var connection = new SqliteConnection("Data Source=SklepDB.db"))
+                {
+                    connection.Open();
+                    var command = connection.CreateCommand();
+                    command.CommandText = query;
+                    command.ExecuteScalar();
+                    udane_klient.Content = "Udało się! Dodałeś nowego klienta do bazy danych!";
+                }
             }
         }
     }

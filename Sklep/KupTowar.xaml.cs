@@ -75,6 +75,11 @@ namespace Sklep
                     produkt_kupiony.Content = String.Format("Zakupiłes {0} w ilości  {1}", lista_towar.Text, ilosc_sokow.Text);
                     obliczone = false;
                     parent_window.AktualizujTabeleSokow();
+                    parent_window.kasa_l.Content = kasa;
+                }
+                else
+                {
+                    produkt_kupiony.Content = "Masz za mało pieniędzy!";
                 }
             }
             else

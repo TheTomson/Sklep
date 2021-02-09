@@ -27,13 +27,16 @@ namespace Sklep
         private int kasa;
 
         private Dictionary<string, SokInformacje> tabela_sokow;
+        private Dictionary<string, KlientInformacje> tabela_klientow;
         public MainWindow()
         {
             kasa = 1000;
             tabela_sokow = new Dictionary<string, SokInformacje>();
+            tabela_klientow = new Dictionary<string, KlientInformacje>();
             InitializeComponent();
             kasa_l.Content = kasa;
             PobierzSklep();
+            PobierzKlientow();
             AktualizujTabeleSokow();
         }
         public void PobierzSklep()
@@ -57,6 +60,27 @@ namespace Sklep
             }
         }
 
+        public void PobierzKlientow()
+        {
+            using (var connection = new SqliteConnection("Data Source=SklepDB.db"))
+            {
+                connection.Open();
+                var command = connection.CreateCommand();
+                command.CommandText = @"SELECT Nazwa, Adres, NumerTelefonu, NIP FROM Klienci";
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        var nazwa = reader.GetString(0);
+                        var adres = reader.GetString(1);
+                        var numer_tel = reader.GetString(2);
+                        var nip = reader.GetString(3);
+                        tabela_klientow.Add(nip, new KlientInformacje(nazwa, adres, numer_tel));
+                    }
+                }
+            }
+        }
+
         public void AktualizujTabeleSokow()
         {
             List<WpisWTabeli> tabela = new List<WpisWTabeli>();
@@ -75,7 +99,7 @@ namespace Sklep
         }
         private void DodajKlienta(object sender, RoutedEventArgs e)
         {
-            var dodajKlienta = new Klienci();
+            var dodajKlienta = new Klienci(ref tabela_klientow);
             dodajKlienta.Show();
         }
     }
@@ -96,5 +120,19 @@ namespace Sklep
         public string nazwa_soku { get; set; }
         public int ilosc { get; set; }
         public int cena { get; set; }
+    }
+
+    public class KlientInformacje
+    {
+        public string Nazwa { get; set; }
+        public string Adres { get; set; }
+        public string NumerTelefonu { get; set; }
+
+        public KlientInformacje(string n, string a, string nt)
+        {
+            Nazwa = n;
+            Adres = a;
+            NumerTelefonu = nt;
+        }
     }
 }
