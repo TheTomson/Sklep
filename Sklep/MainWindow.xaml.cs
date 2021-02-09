@@ -25,12 +25,16 @@ namespace Sklep
     public partial class MainWindow : Window
     {
         private int kasa;
+
+        private Dictionary<string, SokInformacje> tabela_sokow;
         public MainWindow()
         {
-            InitializeComponent();
-            PobierzSklep();
             kasa = 1000;
+            tabela_sokow = new Dictionary<string, SokInformacje>();
+            InitializeComponent();
             kasa_l.Content = kasa;
+            PobierzSklep();
+            AktualizujTabeleSokow();
         }
         public void PobierzSklep()
         {
@@ -39,25 +43,34 @@ namespace Sklep
                 connection.Open();
                 var command = connection.CreateCommand();
                 command.CommandText = @"SELECT NazwaTowaru,Ilosc,Cena FROM Sklep";
-                List<Towary> towary = new List<Towary>();
                 using (var reader = command.ExecuteReader())
                 {
                     while (reader.Read())
                     {
                         var nazwa = reader.GetString(0);
-                        var ilosc = reader.GetString(1);
-                        var cena = reader.GetString(2);
-                        var towar = new Towary(nazwa, ilosc, cena);
-                        towary.Add(towar);
+                        var ilosc = Convert.ToInt32(reader.GetString(1));
+                        var cena = Convert.ToInt32(reader.GetString(2));
+                        tabela_sokow.Add(nazwa, new SokInformacje(ilosc, cena));
                     }
                 }
-                sklep.ItemsSource = towary;
+
             }
+        }
+
+        public void AktualizujTabeleSokow()
+        {
+            List<WpisWTabeli> tabela = new List<WpisWTabeli>();
+            foreach (var sok in tabela_sokow)
+            {
+                tabela.Add(new WpisWTabeli { nazwa_soku = sok.Key, ilosc = sok.Value.Ilosc, cena = sok.Value.Cena });
+            }
+
+            sklep.ItemsSource = tabela;
         }
 
         private void KupTowar(object sender, RoutedEventArgs e)
         {
-            var kuptowar = new KupTowar(kasa);
+            var kuptowar = new KupTowar(this, ref kasa, ref tabela_sokow);
             kuptowar.Show();
         }
         private void DodajKlienta(object sender, RoutedEventArgs e)
@@ -66,17 +79,22 @@ namespace Sklep
             dodajKlienta.Show();
         }
     }
-    public class Towary
+    public class SokInformacje
     {
-        public string NazwaTowaru { get; set; }
-        public string Ilosc { get; set; }
-        public string Cena { get; set; }
+        public int Ilosc { get; set; }
+        public int Cena { get; set; }
 
-        public Towary(string a, string b, string c)
+        public SokInformacje(int ilosc, int cena)
         {
-            NazwaTowaru = a;
-            Ilosc = b;
-            Cena = c;
+            Ilosc = ilosc;
+            Cena = cena;
         }
+    }
+
+    struct WpisWTabeli
+    {
+        public string nazwa_soku { get; set; }
+        public int ilosc { get; set; }
+        public int cena { get; set; }
     }
 }

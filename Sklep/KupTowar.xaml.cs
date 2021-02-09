@@ -23,36 +23,26 @@ namespace Sklep
     {
         private bool obliczone;
         private int kasa;
-        private Dictionary<string, int> tabela_sokow;
+        private Dictionary<string, SokInformacje> tabela_sokow;
+        private MainWindow parent_window;
 
-        public KupTowar(int k)
+        public KupTowar(MainWindow parent, ref int k, ref Dictionary<string, SokInformacje> ts)
         {
             InitializeComponent();
             kasa = k;
-            tabela_sokow = new Dictionary<string, int>();
-            PobierzSoki();
+            tabela_sokow = ts;
             obliczone = false;
+            parent_window = parent;
+            PobierzSoki();
         }
         public void PobierzSoki()
         {
-            using (var connection = new SqliteConnection("Data Source=SklepDB.db"))
+            List<string> soki = new List<string>();
+            foreach (var sok in tabela_sokow)
             {
-                connection.Open();
-                var command = connection.CreateCommand();
-                command.CommandText = @"SELECT NazwaTowaru,Cena FROM Hurtownia";
-                List<string> soki = new List<string>();
-                using (var reader = command.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        var nazwa = reader.GetString(0);
-                        var cena = Convert.ToInt32(reader.GetString(1));
-                        soki.Add(nazwa);
-                        tabela_sokow.Add(nazwa, cena);
-                    }
-                }
-                lista_towar.ItemsSource = soki;
+                soki.Add(sok.Key);
             }
+            lista_towar.ItemsSource = soki;
         }
 
         private void wyznacz_cene(object sender, RoutedEventArgs e)
@@ -60,7 +50,7 @@ namespace Sklep
             if (Convert.ToInt32(ilosc_sokow.Text) > 0)
             {
                 var sok = Convert.ToString(lista_towar.SelectedItem);
-                var cena_za_szt = tabela_sokow[sok];
+                var cena_za_szt = tabela_sokow[sok].Cena;
                 var cena_calkowita = cena_za_szt * Convert.ToInt32(ilosc_sokow.Text);
                 do_zaplatyy.Content = Convert.ToString(cena_calkowita);
                 obliczone = true;
@@ -73,12 +63,23 @@ namespace Sklep
 
         private void kup_sokii(object sender, RoutedEventArgs e)
         {
-            var koszt = Convert.ToInt32(do_zaplatyy.Content);
-            if (koszt <= kasa && obliczone == true)
+            if (obliczone)
             {
-                kasa -= koszt;
-                produkt_kupiony.Content = String.Format("Zakupiłes {0} w ilości  {1}",lista_towar.Text,ilosc_sokow.Text);
-                obliczone = false;
+                var koszt = Convert.ToInt32(do_zaplatyy.Content);
+                if (koszt <= kasa)
+                {
+                    var sok = Convert.ToString(lista_towar.SelectedItem);
+                    var ilosc = Convert.ToInt32(ilosc_sokow.Text);
+                    tabela_sokow[sok].Ilosc += ilosc;
+                    kasa -= koszt;
+                    produkt_kupiony.Content = String.Format("Zakupiłes {0} w ilości  {1}", lista_towar.Text, ilosc_sokow.Text);
+                    obliczone = false;
+                    parent_window.AktualizujTabeleSokow();
+                }
+            }
+            else
+            {
+                produkt_kupiony.Content = "Przed zakupem należy obliczyć cenę!";
             }
         }
     }
