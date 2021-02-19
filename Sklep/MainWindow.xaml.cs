@@ -31,7 +31,7 @@ namespace Sklep
         private Dictionary<int, ZamowienieInformacje> tabela_zamowien;
         public MainWindow()
         {
-            kasa = 1000;
+            PobierzSrodki();
             tabela_sokow = new Dictionary<string, SokInformacje>();
             tabela_klientow = new Dictionary<string, KlientInformacje>();
             tabela_zamowien = new Dictionary<int, ZamowienieInformacje>();
@@ -43,6 +43,24 @@ namespace Sklep
             AktualizujTabeleSokow();
             AktualizujTabeleZamowien();
         }
+
+        private void PobierzSrodki()
+        {
+            using (var connection = new SqliteConnection("Data Source=SklepDB.db"))
+            {
+                connection.Open();
+                var command = connection.CreateCommand();
+                command.CommandText = @"SELECT Ilosc FROM Srodki";
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        kasa = reader.GetInt32(0);
+                    }
+                }
+            }
+        }
+
         public void PobierzSklep()
         {
             using (var connection = new SqliteConnection("Data Source=SklepDB.db"))
@@ -105,7 +123,7 @@ namespace Sklep
                         var sok = reader.GetString(3);
                         var ilosc = reader.GetInt32(4);
                         var koszt = reader.GetInt32(5);
-                        tabela_zamowien.Add(id, new ZamowienieInformacje(nazwa, nip, sok, ilosc, koszt));
+                        tabela_zamowien.Add(id, new ZamowienieInformacje(id, nazwa, nip, sok, ilosc, koszt));
                     }
                 }
             }
@@ -125,12 +143,24 @@ namespace Sklep
         public void AktualizujTabeleZamowien()
         {
             List<ZamowienieInformacje> zamowienia = new List<ZamowienieInformacje>();
-            foreach (var zamowienie in tabela_zamowien)
+            foreach(var zamowienie in tabela_zamowien)
             {
                 zamowienia.Add(zamowienie.Value);
             }
 
             lista_zamowien.ItemsSource = zamowienia;
+        }
+
+        public void AktualizujSrodki()
+        {
+
+            using (var connection = new SqliteConnection("Data Source=SklepDB.db"))
+            {
+                connection.Open();
+                var command = connection.CreateCommand();
+                command.CommandText = String.Format("UPDATE Srodki SET Ilosc={0}", kasa);
+                command.ExecuteScalar();
+            }
         }
 
         private void KupTowar(object sender, RoutedEventArgs e)
@@ -148,6 +178,66 @@ namespace Sklep
         {
             var dodaj_zamowienie = new Zamowienia(this, ref tabela_sokow, ref tabela_klientow);
             dodaj_zamowienie.Show();
+        }
+
+        private void ZamknijOnko(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            foreach (var sok in tabela_sokow)
+            {
+                using (var connection = new SqliteConnection("Data Source=SklepDB.db"))
+                {
+                    connection.Open();
+                    var command = connection.CreateCommand();
+                    command.CommandText = String.Format("UPDATE Sklep SET Ilosc={0} WHERE IdTowaru={1}", sok.Value.Ilosc, sok.Value.ID);
+                    command.ExecuteScalar();
+                }
+            }
+            AktualizujSrodki();
+        }
+
+        private void RealizujZamówienie(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                int numer_zamowienia = Convert.ToInt32(id_zamowienia.Text);
+
+                if (tabela_zamowien.ContainsKey(numer_zamowienia))
+                {
+                    var zamowienie = tabela_zamowien[numer_zamowienia];
+                    var sok = zamowienie.NazwaSoku;
+                    var wymagana_ilosc_soku = zamowienie.Ilosc;
+
+                    if (tabela_sokow[sok].Ilosc >= wymagana_ilosc_soku)
+                    {
+                        tabela_sokow[sok].Ilosc -= wymagana_ilosc_soku;
+                        kasa += wymagana_ilosc_soku * tabela_sokow[sok].Cena;
+                        using (var connection = new SqliteConnection("Data Source=SklepDB.db"))
+                        {
+                            connection.Open();
+                            var command = connection.CreateCommand();
+                            command.CommandText = String.Format("DELETE FROM Zamowienia WHERE ID={0}", numer_zamowienia);
+                            command.ExecuteScalar();
+                        }
+
+                        kasa_l.Content = kasa;
+                        tabela_zamowien.Remove(numer_zamowienia);
+                        AktualizujTabeleZamowien();
+                    } 
+                    else
+                    {
+                        info.Content = String.Format("Za mało {0}", sok);
+                    }
+                }
+                else
+                {
+                    info.Content = "Nie ma zamówienia o podanym numerze!";
+                }
+            } 
+            catch (Exception ex) 
+            {
+                info.Content = "Błąd! Należy wprowadzić liczbę!";
+            }
+            
         }
     }
     public class SokInformacje
@@ -177,7 +267,7 @@ namespace Sklep
         public string Nazwa { get; set; }
         public string Adres { get; set; }
         public string NumerTelefonu { get; set; }
-
+       
         public KlientInformacje(int id, string nazwa, string adres, string telefon)
         {
             ID = id;
@@ -189,14 +279,16 @@ namespace Sklep
 
     public class ZamowienieInformacje
     {
+        public int NumerZamowienia { get; set; }
         public string NazwaKlienta { get; set; }
         public string NipKlienta { get; set; }
         public string NazwaSoku { get; set; }
         public int Ilosc { get; set; }
         public int Cena { get; set; }
 
-        public ZamowienieInformacje(string nazwa, string nip, string sok, int ilosc, int cena)
+        public ZamowienieInformacje(int id_zamowienia, string nazwa, string nip, string sok, int ilosc, int cena)
         {
+            NumerZamowienia = id_zamowienia;
             NazwaKlienta = nazwa;
             NipKlienta = nip;
             NazwaSoku = sok;
