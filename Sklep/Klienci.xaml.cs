@@ -22,11 +22,14 @@ namespace Sklep
     /// </summary>                                   
     public partial class Klienci : Window
     {
+        public event EventHandler AktualizujTabeleKlientow;
+
         private Dictionary<string, KlientInformacje> tabela_klientow;
         public Klienci(ref Dictionary<string, KlientInformacje> tk)
         {
             tabela_klientow = tk;
             InitializeComponent();
+            Loaded += new RoutedEventHandler(DodajKlienci);
         }
         public void DodajKlienci(object sender, RoutedEventArgs e)
         {
@@ -41,19 +44,19 @@ namespace Sklep
                 udane_klient.Content = "Nazwa nie może być dłuższa niż 255 znaków oraz nie może być pusty!";
                 dodaj_klienta = false;
                 return;
-            } 
+            }
             else if (adres_klienta.Length > 255 && adres_klienta.Length == 0)
             {
                 udane_klient.Content = "Adres nie może być dłuższy niż 255 znaków oraz nie może być pusty!";
                 dodaj_klienta = false;
                 return;
-            } 
+            }
             else if (telefon_klienta.Length != 9)
             {
                 udane_klient.Content = "Numer telefonu musi posiadać 9 cyfr!";
                 dodaj_klienta = false;
                 return;
-            } 
+            }
             else if (nip_klienta.Length != 11)
             {
                 udane_klient.Content = "NIP musi posiadać 11 cyfr!";
@@ -78,6 +81,11 @@ namespace Sklep
                     command.ExecuteScalar();
                     udane_klient.Content = "Udało się! Dodałeś nowego klienta do bazy danych!";
                 }
+            }
+
+            if (AktualizujTabeleKlientow != null)
+            {
+                AktualizujTabeleKlientow(this, EventArgs.Empty);
             }
         }
     }

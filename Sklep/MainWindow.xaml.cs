@@ -143,7 +143,7 @@ namespace Sklep
         public void AktualizujTabeleZamowien()
         {
             List<ZamowienieInformacje> zamowienia = new List<ZamowienieInformacje>();
-            foreach(var zamowienie in tabela_zamowien)
+            foreach (var zamowienie in tabela_zamowien)
             {
                 zamowienia.Add(zamowienie.Value);
             }
@@ -171,7 +171,14 @@ namespace Sklep
         private void DodajKlienta(object sender, RoutedEventArgs e)
         {
             var dodajKlienta = new Klienci(ref tabela_klientow);
+            dodajKlienta.AktualizujTabeleKlientow += new EventHandler(AktualizujTabeleKlientow);
             dodajKlienta.Show();
+        }
+
+        private void AktualizujTabeleKlientow(object sender, EventArgs e)
+        {
+            tabela_klientow.Clear();
+            PobierzKlientow();
         }
 
         private void DodajZamowienie(object sender, RoutedEventArgs e)
@@ -222,7 +229,7 @@ namespace Sklep
                         kasa_l.Content = kasa;
                         tabela_zamowien.Remove(numer_zamowienia);
                         AktualizujTabeleZamowien();
-                    } 
+                    }
                     else
                     {
                         info.Content = String.Format("Za mało {0}", sok);
@@ -232,12 +239,12 @@ namespace Sklep
                 {
                     info.Content = "Nie ma zamówienia o podanym numerze!";
                 }
-            } 
-            catch (Exception ex) 
+            }
+            catch (Exception ex)
             {
                 info.Content = "Błąd! Należy wprowadzić liczbę!";
             }
-            
+
         }
     }
     public class SokInformacje
@@ -267,7 +274,7 @@ namespace Sklep
         public string Nazwa { get; set; }
         public string Adres { get; set; }
         public string NumerTelefonu { get; set; }
-       
+
         public KlientInformacje(int id, string nazwa, string adres, string telefon)
         {
             ID = id;
